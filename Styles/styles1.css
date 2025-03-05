@@ -1,0 +1,74 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background:radial-gradient(circle, #f0f0f0, #474545);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .card-container {
+    text-align: center;
+  }
+  
+  .card {
+    background-color: white;
+    border: 1px solid #747272;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+  }
+  
+  .word {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .furigana {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .kanji {
+    font-size: 32px;
+    font-weight: bold;
+  }
+  
+  .translation {
+    font-size: 18px;
+    color: #333;
+    margin-top: 10px;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .navigation-buttons {
+
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 300px;
+    align-self: center;
+  }
+  
+  button {
+    padding: 10px 20px;
+    word-spacing: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: transparent;
+    color: white;
+    border: none;
+    border-radius: 8px;
+  }
+  
+  button:hover {
+    background-color: #898888;
+  }
+  
