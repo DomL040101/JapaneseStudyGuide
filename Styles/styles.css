@@ -1,0 +1,19 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background:radial-gradient(circle, #f0f0f0, #474545);
+    text-align: center;
+    word-spacing: 10px;
+    line-height: 45px;
+  }
+
+button{
+    height: 30px;
+    width: 100px;
+    border-radius: 8px;
+
+}
+
+h4{
+  opacity: 70%;
+}
