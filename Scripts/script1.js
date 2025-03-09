@@ -4,7 +4,7 @@
 const wordData = [
     { kanji: "私", furigana: "わたし", translation: "I" },
     { kanji: "あなた", furigana: "", translation: "You" },
-    { kanji: "あの人（あの方）", furigana: "あのひと（あのかた）（あのかた）", translation: "That person, he, she" },
+    { kanji: "あの人（あの方）", furigana: "あのひと（あのかた)", translation: "That person, he, she" },
     { kanji: "ーさん", furigana: "", translation: "Mr., Ms.　ー" },
     { kanji: "ーちゃん", furigana: "", translation: "(Child suffix)" },
     { kanji: "ー人", furigana: "ーじん", translation: "(National of - suffix)" },
