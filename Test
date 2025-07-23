@@ -280,3 +280,66 @@ You can enhance it further by adding restart buttons, timers, etc.
 
 Would you like help turning this into a playable mobile version or adding sound/animation effects?
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guess Who - 5x2</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 100px);
+      grid-gap: 10px;
+    }
+
+    .character {
+      width: 100px;
+      height: 100px;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #444;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .hidden {
+      background: #888 !important;
+    }
+
+    #victory {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid" id="grid"></div>
+<div id="victory">🎉 Victory! You found the correct one! 🎉</div>
+
+<script>
+  const imageUrls = [
+    'https://via.placeholder.com/100/ff9999', // 0
+    'https://via.placeholder.com/100/99ff99', // 1
+    'https://via
