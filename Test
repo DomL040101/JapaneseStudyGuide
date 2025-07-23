@@ -343,3 +343,108 @@ Would you like help turning this into a playable mobile version or adding sound/
     'https://via.placeholder.com/100/ff9999', // 0
     'https://via.placeholder.com/100/99ff99', // 1
     'https://via
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guess Who - 5x2</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 100px);
+      grid-gap: 10px;
+    }
+
+    .character {
+      width: 100px;
+      height: 100px;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #444;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .hidden {
+      background: #888 !important;
+    }
+
+    #victory {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid" id="grid"></div>
+<div id="victory">🎉 Victory! You found the correct one! 🎉</div>
+
+<script>
+  const imageUrls = [
+    'https://via.placeholder.com/100/ff9999', // 0
+    'https://via.placeholder.com/100/99ff99', // 1
+    'https://via.placeholder.com/100/9999ff', // 2
+    'https://via.placeholder.com/100/ffff99', // 3
+    'https://via.placeholder.com/100/ff99ff', // 4
+    'https://via.placeholder.com/100/99ffff', // 5
+    'https://via.placeholder.com/100/cccccc', // 6
+    'https://via.placeholder.com/100/ffcc99', // 7
+    'https://via.placeholder.com/100/ccff99', // 8
+    'https://via.placeholder.com/100/999999'  // 9
+  ];
+
+  const winningIndex = 4; // Only right-click on this index will show the victory page
+
+  const grid = document.getElementById('grid');
+  const victory = document.getElementById('victory');
+
+  imageUrls.forEach((url, index) => {
+    const div = document.createElement('div');
+    div.classList.add('character');
+    div.style.backgroundImage = `url(${url})`;
+
+    // Left-click hides the character
+    div.addEventListener('click', (e) => {
+      e.preventDefault();
+      div.classList.add('hidden');
+    });
+
+    // Right-click checks for win condition
+    div.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if (index === winningIndex) {
+        victory.style.display = 'flex';
+      }
+    });
+
+    grid.appendChild(div);
+  });
+</script>
+
+</body>
+</html>
