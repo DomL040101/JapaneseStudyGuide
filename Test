@@ -1,0 +1,282 @@
+Here’s a simple HTML/JavaScript implementation of a 5×2 "Guess Who" style game:
+
+You have a 5×2 grid (10 characters).
+
+Left-click on a character hides the image.
+
+Right-click on the correct character (victory condition), shows a victory screen/page.
+
+Right-clicking on any other image just prevents the context menu (does nothing special).
+
+You can customize image URLs and the winning character index.
+
+
+
+---
+
+✅ Features:
+
+No external libraries
+
+Clean and lightweight
+
+Easily customizable
+
+
+
+---
+
+🔧 Instructions:
+
+Replace "imageX.jpg" with actual image paths.
+
+Set winningIndex to match the "correct" image index (0–9).
+
+
+
+---
+
+💻 Code:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guess Who - 5x2</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f0f0f0;
+      margin: 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 100px);
+      grid-gap: 10px;
+    }
+    .character {
+      width: 100px;
+      height: 100px;
+      border: 2px solid #333;
+      cursor: pointer;
+      background-size: cover;
+      background-position: center;
+    }
+    .hidden {
+      background: #999 !important;
+    }
+    #victory {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid" id="grid"></div>
+<div id="victory">🎉 Victory! You found the correct one! 🎉</div>
+
+<script>
+  const images = [
+    "image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg",
+    "image6.jpg", "image7.jpg", "image8.jpg", "image9.jpg", "image10.jpg"
+  ];
+
+  const winningIndex = 3; // 0-based index of the correct person
+
+  const grid = document.getElementById('grid');
+  const victory = document.getElementById('victory');
+
+  images.forEach((img, index) => {
+    const div = document.createElement('div');
+    div.classList.add('character');
+    div.style.backgroundImage = `url(${img})`;
+
+    // Left click to hide
+    div.addEventListener('click', () => {
+      div.classList.add('hidden');
+    });
+
+    // Right click to check for victory
+    div.addEventListener('contextmenu', (e) => {
+      e.preventDefault(); // prevent context menu
+      if (index === winningIndex) {
+        victory.style.display = 'flex';
+      }
+    });
+
+    grid.appendChild(div);
+  });
+</script>
+
+</body>
+</html>
+
+
+---
+
+🛠️ Customization Tips:
+
+Replace "imageX.jpg" with actual character images (local or URLs).
+
+You can change the grid size by editing the grid-template-columns.
+
+You can enhance it further by adding restart buttons, timers, etc.
+
+
+Would you like help turning this into a playable mobile version or adding sound/animation effects?
+
+Here’s a simple HTML/JavaScript implementation of a 5×2 "Guess Who" style game:
+
+You have a 5×2 grid (10 characters).
+
+Left-click on a character hides the image.
+
+Right-click on the correct character (victory condition), shows a victory screen/page.
+
+Right-clicking on any other image just prevents the context menu (does nothing special).
+
+You can customize image URLs and the winning character index.
+
+
+
+---
+
+✅ Features:
+
+No external libraries
+
+Clean and lightweight
+
+Easily customizable
+
+
+
+---
+
+🔧 Instructions:
+
+Replace "imageX.jpg" with actual image paths.
+
+Set winningIndex to match the "correct" image index (0–9).
+
+
+
+---
+
+💻 Code:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guess Who - 5x2</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f0f0f0;
+      margin: 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 100px);
+      grid-gap: 10px;
+    }
+    .character {
+      width: 100px;
+      height: 100px;
+      border: 2px solid #333;
+      cursor: pointer;
+      background-size: cover;
+      background-position: center;
+    }
+    .hidden {
+      background: #999 !important;
+    }
+    #victory {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid" id="grid"></div>
+<div id="victory">🎉 Victory! You found the correct one! 🎉</div>
+
+<script>
+  const images = [
+    "image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg",
+    "image6.jpg", "image7.jpg", "image8.jpg", "image9.jpg", "image10.jpg"
+  ];
+
+  const winningIndex = 3; // 0-based index of the correct person
+
+  const grid = document.getElementById('grid');
+  const victory = document.getElementById('victory');
+
+  images.forEach((img, index) => {
+    const div = document.createElement('div');
+    div.classList.add('character');
+    div.style.backgroundImage = `url(${img})`;
+
+    // Left click to hide
+    div.addEventListener('click', () => {
+      div.classList.add('hidden');
+    });
+
+    // Right click to check for victory
+    div.addEventListener('contextmenu', (e) => {
+      e.preventDefault(); // prevent context menu
+      if (index === winningIndex) {
+        victory.style.display = 'flex';
+      }
+    });
+
+    grid.appendChild(div);
+  });
+</script>
+
+</body>
+</html>
+
+
+---
+
+🛠️ Customization Tips:
+
+Replace "imageX.jpg" with actual character images (local or URLs).
+
+You can change the grid size by editing the grid-template-columns.
+
+You can enhance it further by adding restart buttons, timers, etc.
+
+
+Would you like help turning this into a playable mobile version or adding sound/animation effects?
+
