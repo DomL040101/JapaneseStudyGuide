@@ -1,449 +1,142 @@
-Here’s a simple HTML/JavaScript implementation of a 5×2 "Guess Who" style game:
-
-You have a 5×2 grid (10 characters).
-
-Left-click on a character hides the image.
-
-Right-click on the correct character (victory condition), shows a victory screen/page.
-
-Right-clicking on any other image just prevents the context menu (does nothing special).
-
-You can customize image URLs and the winning character index.
-
-
-
----
-
-✅ Features:
-
-No external libraries
-
-Clean and lightweight
-
-Easily customizable
-
-
-
----
-
-🔧 Instructions:
-
-Replace "imageX.jpg" with actual image paths.
-
-Set winningIndex to match the "correct" image index (0–9).
-
-
-
----
-
-💻 Code:
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Guess Who - 5x2</title>
+  <title>Guess Who</title>
   <style>
     body {
-      font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: #f0f0f0;
       margin: 0;
+      padding: 20px;
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+      text-align: center;
     }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(5, 100px);
-      grid-gap: 10px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+      max-width: 1000px;
+      margin: 30px auto;
     }
-    .character {
-      width: 100px;
-      height: 100px;
-      border: 2px solid #333;
+
+    .grid img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       cursor: pointer;
-      background-size: cover;
-      background-position: center;
+      transition: opacity 0.3s ease;
     }
+
     .hidden {
-      background: #999 !important;
+      opacity: 0;
     }
-    #victory {
-      display: none;
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Overlay styling */
+    .overlay {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
-      color: white;
-      font-size: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-    }
-  </style>
-</head>
-<body>
-
-<div class="grid" id="grid"></div>
-<div id="victory">🎉 Victory! You found the correct one! 🎉</div>
-
-<script>
-  const images = [
-    "image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg",
-    "image6.jpg", "image7.jpg", "image8.jpg", "image9.jpg", "image10.jpg"
-  ];
-
-  const winningIndex = 3; // 0-based index of the correct person
-
-  const grid = document.getElementById('grid');
-  const victory = document.getElementById('victory');
-
-  images.forEach((img, index) => {
-    const div = document.createElement('div');
-    div.classList.add('character');
-    div.style.backgroundImage = `url(${img})`;
-
-    // Left click to hide
-    div.addEventListener('click', () => {
-      div.classList.add('hidden');
-    });
-
-    // Right click to check for victory
-    div.addEventListener('contextmenu', (e) => {
-      e.preventDefault(); // prevent context menu
-      if (index === winningIndex) {
-        victory.style.display = 'flex';
-      }
-    });
-
-    grid.appendChild(div);
-  });
-</script>
-
-</body>
-</html>
-
-
----
-
-🛠️ Customization Tips:
-
-Replace "imageX.jpg" with actual character images (local or URLs).
-
-You can change the grid size by editing the grid-template-columns.
-
-You can enhance it further by adding restart buttons, timers, etc.
-
-
-Would you like help turning this into a playable mobile version or adding sound/animation effects?
-
-Here’s a simple HTML/JavaScript implementation of a 5×2 "Guess Who" style game:
-
-You have a 5×2 grid (10 characters).
-
-Left-click on a character hides the image.
-
-Right-click on the correct character (victory condition), shows a victory screen/page.
-
-Right-clicking on any other image just prevents the context menu (does nothing special).
-
-You can customize image URLs and the winning character index.
-
-
-
----
-
-✅ Features:
-
-No external libraries
-
-Clean and lightweight
-
-Easily customizable
-
-
-
----
-
-🔧 Instructions:
-
-Replace "imageX.jpg" with actual image paths.
-
-Set winningIndex to match the "correct" image index (0–9).
-
-
-
----
-
-💻 Code:
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Guess Who - 5x2</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: #f0f0f0;
-      margin: 0;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(5, 100px);
-      grid-gap: 10px;
-    }
-    .character {
-      width: 100px;
-      height: 100px;
-      border: 2px solid #333;
-      cursor: pointer;
-      background-size: cover;
-      background-position: center;
-    }
-    .hidden {
-      background: #999 !important;
-    }
-    #victory {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
-      color: white;
-      font-size: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-    }
-  </style>
-</head>
-<body>
-
-<div class="grid" id="grid"></div>
-<div id="victory">🎉 Victory! You found the correct one! 🎉</div>
-
-<script>
-  const images = [
-    "image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg",
-    "image6.jpg", "image7.jpg", "image8.jpg", "image9.jpg", "image10.jpg"
-  ];
-
-  const winningIndex = 3; // 0-based index of the correct person
-
-  const grid = document.getElementById('grid');
-  const victory = document.getElementById('victory');
-
-  images.forEach((img, index) => {
-    const div = document.createElement('div');
-    div.classList.add('character');
-    div.style.backgroundImage = `url(${img})`;
-
-    // Left click to hide
-    div.addEventListener('click', () => {
-      div.classList.add('hidden');
-    });
-
-    // Right click to check for victory
-    div.addEventListener('contextmenu', (e) => {
-      e.preventDefault(); // prevent context menu
-      if (index === winningIndex) {
-        victory.style.display = 'flex';
-      }
-    });
-
-    grid.appendChild(div);
-  });
-</script>
-
-</body>
-</html>
-
-
----
-
-🛠️ Customization Tips:
-
-Replace "imageX.jpg" with actual character images (local or URLs).
-
-You can change the grid size by editing the grid-template-columns.
-
-You can enhance it further by adding restart buttons, timers, etc.
-
-
-Would you like help turning this into a playable mobile version or adding sound/animation effects?
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Guess Who - 5x2</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: #e0e0e0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      width: 100vw;
       height: 100vh;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(5, 100px);
-      grid-gap: 10px;
-    }
-
-    .character {
-      width: 100px;
-      height: 100px;
-      background-size: cover;
-      background-position: center;
-      border: 2px solid #444;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .hidden {
-      background: #888 !important;
-    }
-
-    #victory {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
+      background-color: rgba(0, 0, 0, 0.85);
       color: white;
-      font-size: 2rem;
-      display: flex;
-      align-items: center;
+      display: none;
       justify-content: center;
-      z-index: 999;
-    }
-  </style>
-</head>
-<body>
-
-<div class="grid" id="grid"></div>
-<div id="victory">🎉 Victory! You found the correct one! 🎉</div>
-
-<script>
-  const imageUrls = [
-    'https://via.placeholder.com/100/ff9999', // 0
-    'https://via.placeholder.com/100/99ff99', // 1
-    'https://via
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Guess Who - 5x2</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: #e0e0e0;
-      display: flex;
+      align-items: center;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(5, 100px);
-      grid-gap: 10px;
-    }
-
-    .character {
-      width: 100px;
-      height: 100px;
-      background-size: cover;
-      background-position: center;
-      border: 2px solid #444;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .hidden {
-      background: #888 !important;
-    }
-
-    #victory {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
-      color: white;
       font-size: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       z-index: 999;
+      padding: 20px;
+    }
+
+    .overlay img {
+      max-width: 200px;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px white;
+    }
+
+    .overlay button {
+      margin-top: 20px;
+      background-color: #28a745;
+    }
+
+    .overlay button:hover {
+      background-color: #1e7e34;
     }
   </style>
 </head>
 <body>
 
-<div class="grid" id="grid"></div>
-<div id="victory">🎉 Victory! You found the correct one! 🎉</div>
+<h2>Guess Who - Click to Hide, Right Click if You Found the One!</h2>
+
+<div class="grid">
+  <img src="https://via.placeholder.com/150/ff4444" id="img1">
+  <img src="https://via.placeholder.com/150/44ff44" id="img2">
+  <img src="https://via.placeholder.com/150/4444ff" id="img3">
+  <img src="https://via.placeholder.com/150/ffff44" id="img4">
+  <img src="https://via.placeholder.com/150/ff44ff" id="img5">
+  <img src="https://via.placeholder.com/150/44ffff" id="img6">
+  <img src="https://via.placeholder.com/150/888888" id="img7">
+  <img src="https://via.placeholder.com/150/00aa00" id="img8">
+  <img src="https://via.placeholder.com/150/aa0000" id="img9">
+  <img src="https://via.placeholder.com/150/0000aa" id="img10">
+</div>
+
+<button id="resetBtn">Reset All</button>
+
+<div id="overlay" class="overlay">
+  <div>🎉 Congratulations! You found the right character! 🎉</div>
+  <img id="selectedImg" src="" alt="Selected Character">
+  <button onclick="hideOverlay()">Close</button>
+</div>
 
 <script>
-  const imageUrls = [
-    'https://via.placeholder.com/100/ff9999', // 0
-    'https://via.placeholder.com/100/99ff99', // 1
-    'https://via.placeholder.com/100/9999ff', // 2
-    'https://via.placeholder.com/100/ffff99', // 3
-    'https://via.placeholder.com/100/ff99ff', // 4
-    'https://via.placeholder.com/100/99ffff', // 5
-    'https://via.placeholder.com/100/cccccc', // 6
-    'https://via.placeholder.com/100/ffcc99', // 7
-    'https://via.placeholder.com/100/ccff99', // 8
-    'https://via.placeholder.com/100/999999'  // 9
-  ];
+  document.addEventListener("contextmenu", e => e.preventDefault());
 
-  const winningIndex = 4; // Only right-click on this index will show the victory page
+  const images = document.querySelectorAll('.grid img');
+  const overlay = document.getElementById('overlay');
+  const selectedImg = document.getElementById('selectedImg');
 
-  const grid = document.getElementById('grid');
-  const victory = document.getElementById('victory');
-
-  imageUrls.forEach((url, index) => {
-    const div = document.createElement('div');
-    div.classList.add('character');
-    div.style.backgroundImage = `url(${url})`;
-
-    // Left-click hides the character
-    div.addEventListener('click', (e) => {
-      e.preventDefault();
-      div.classList.add('hidden');
+  images.forEach(img => {
+    // Left click: hide image
+    img.addEventListener('click', () => {
+      img.classList.add('hidden');
     });
 
-    // Right-click checks for win condition
-    div.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      if (index === winningIndex) {
-        victory.style.display = 'flex';
-      }
+    // Right click: show overlay and selected image
+    img.addEventListener('contextmenu', () => {
+      selectedImg.src = img.src;
+      overlay.style.display = 'flex';
     });
-
-    grid.appendChild(div);
   });
+
+  // Reset button
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    images.forEach(img => img.classList.remove('hidden'));
+    hideOverlay();
+  });
+
+  function hideOverlay() {
+    overlay.style.display = 'none';
+    selectedImg.src = "";
+  }
 </script>
 
 </body>
