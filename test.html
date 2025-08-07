@@ -23,7 +23,7 @@
     .game-board {
       display: grid;
       grid-template-columns: repeat(4, 100px);
-      grid-template-rows: repeat(2, 100px);
+      grid-template-rows: repeat(4, 100px);
       gap: 10px;
     }
 
@@ -85,7 +85,7 @@
 </head>
 <body>
 
-<h1>2x4 Matching Game</h1>
+<h1>Matching Game</h1>
 <div class="game-board" id="gameBoard"></div>
 
 <div class="victory-screen" id="victoryScreen">
@@ -96,7 +96,7 @@
 <script>
   const board = document.getElementById('gameBoard');
   const victoryScreen = document.getElementById('victoryScreen');
-  const numbers = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6];
+  const numbers = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8];
   let flippedCards = [];
   let lockBoard = false;
   let matchCount = 0;
