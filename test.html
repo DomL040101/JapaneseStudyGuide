@@ -13,6 +13,7 @@
       background: #f0f0f0;
       height: 100vh;
       justify-content: center;
+      position: relative;
     }
 
     h1 {
@@ -48,6 +49,38 @@
       opacity: 0;
       pointer-events: none;
     }
+
+    .victory-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 2rem;
+      z-index: 10;
+      display: none;
+    }
+
+    .victory-screen button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #4caf50;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .victory-screen button:hover {
+      background: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -55,20 +88,31 @@
 <h1>2x4 Matching Game</h1>
 <div class="game-board" id="gameBoard"></div>
 
+<div class="victory-screen" id="victoryScreen">
+  🎉 You Win!
+  <button onclick="restartGame()">Restart Game</button>
+</div>
+
 <script>
   const board = document.getElementById('gameBoard');
+  const victoryScreen = document.getElementById('victoryScreen');
   const numbers = [1, 1, 2, 2, 3, 3, 4, 4];
   let flippedCards = [];
   let lockBoard = false;
+  let matchCount = 0;
 
-  // Shuffle the cards
   function shuffle(array) {
     return array.sort(() => 0.5 - Math.random());
   }
 
-  // Initialize the board
   function initGame() {
+    board.innerHTML = '';
+    victoryScreen.style.display = 'none';
     const shuffled = shuffle([...numbers]);
+    matchCount = 0;
+    flippedCards = [];
+    lockBoard = false;
+
     shuffled.forEach((number, index) => {
       const card = document.createElement('div');
       card.classList.add('card');
@@ -80,7 +124,6 @@
     });
   }
 
-  // Handle card flip
   function flipCard(e) {
     const card = e.currentTarget;
     if (lockBoard || card.classList.contains('flipped') || card.classList.contains('matched')) return;
@@ -94,20 +137,21 @@
     }
   }
 
-  // Check if two flipped cards match
   function checkForMatch() {
     lockBoard = true;
     const [card1, card2] = flippedCards;
 
     if (card1.dataset.number === card2.dataset.number) {
-      // Match
       setTimeout(() => {
         card1.classList.add('matched');
         card2.classList.add('matched');
+        matchCount++;
         resetFlips();
+        if (matchCount === 4) {
+          showVictoryScreen();
+        }
       }, 500);
     } else {
-      // Not a match
       setTimeout(() => {
         card1.classList.remove('flipped');
         card2.classList.remove('flipped');
@@ -121,6 +165,16 @@
   function resetFlips() {
     flippedCards = [];
     lockBoard = false;
+  }
+
+  function showVictoryScreen() {
+    setTimeout(() => {
+      victoryScreen.style.display = 'flex';
+    }, 300);
+  }
+
+  function restartGame() {
+    initGame();
   }
 
   initGame();
