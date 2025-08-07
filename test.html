@@ -1,40 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-    <title>Guess Who</title>
-      <style>
-          body {
-                margin: 0;
-                      padding: 20px;
-                            font-family: sans-serif;
-                                  background-color: #f0f0f0;
-                                        text-align: center;
-                                            }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>2x4 Matching Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #f0f0f0;
+      height: 100vh;
+      justify-content: center;
+    }
 
-                                                .grid {
-                                                      display: grid;
-                                                            grid-template-columns: repeat(5, 1fr);
-                                                                  gap: 15px;
-                                                                        max-width: 1000px;
-                                                                              margin: 30px auto;
-                                                                                  }
+    h1 {
+      margin-bottom: 20px;
+    }
 
-                                                                                      .grid img {
-                                                                                            width: 100%;
-                                                                                                  height: auto;
-                                                                                                        border-radius: 8px;
-                                                                                                              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                                                                                                                    cursor: pointer;
-                                                                                                                          transition: opacity 0.3s ease;
-                                                                                                                              }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-template-rows: repeat(2, 100px);
+      gap: 10px;
+    }
 
-                                                                                                                                  .hidden {
-                                                                                                                                        opacity: 0;
-                                                                                                                                            }
+    .card {
+      background: #333;
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 10px;
+      user-select: none;
+      transition: transform 0.3s, background 0.3s, opacity 0.5s;
+      position: relative;
+    }
 
-                                                                                                                                                button {
-                                                                                                                                                      padding: 10px 20px;
+    .card.flipped {
+      background: #4caf50;
+    }
+
+    .card.matched {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1>2x4 Matching Game</h1>
+<div class="game-board" id="gameBoard"></div>
+
+<script>
+  const board = document.getElementById('gameBoard');
+  const numbers = [1, 1, 2, 2, 3, 3, 4, 4];
+  let flippedCards = [];
+  let lockBoard = false;
+
+  // Shuffle the cards
+  function shuffle(array) {
+    return array.sort(() => 0.5 - Math.random());
+  }
+
+  // Initialize the board
+  function initGame() {
+    const shuffled = shuffle([...numbers]);
+    shuffled.forEach((number, index) => {
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.dataset.number = number;
+      card.dataset.index = index;
+      card.innerText = '';
+      card.addEventListener('click', flipCard);
+      board.appendChild(card);
+    });
+  }
+
+  // Handle card flip
+  function flipCard(e) {
+    const card = e.currentTarget;
+    if (lockBoard || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+    card.classList.add('flipped');
+    card.innerText = card.dataset.number;
+    flippedCards.push(card);
+
+    if (flippedCards.length === 2) {
+      checkForMatch();
+    }
+  }
+
+  // Check if two flipped cards match
+  function checkForMatch() {
+    lockBoard = true;
+    const [card1, card2] = flippedCards;
+
+    if (card1.dataset.number === card2.dataset.number) {
+      // Match
+      setTimeout(() => {
+        card1.classList.add('matched');
+        card2.classList.add('matched');
+        resetFlips();
+      }, 500);
+    } else {
+      // Not a match
+      setTimeout(() => {
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+        card1.innerText = '';
+        card2.innerText = '';
+        resetFlips();
+      }, 1000);
+    }
+  }
+
+  function resetFlips() {
+    flippedCards = [];
+    lockBoard = false;
+  }
+
+  initGame();
+</script>
+
+</body>
+</html>                                                                                                                                                      padding: 10px 20px;
                                                                                                                                                             font-size: 16px;
                                                                                                                                                                   background-color: #007bff;
                                                                                                                                                                         color: white;
