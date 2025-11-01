@@ -20,21 +20,113 @@
 <body>
   <div class="map-wrap">
     <h1>Interactive World Map — Click to Toggle Highlighted Countries</h1><!-- Full detailed world map (Natural Earth SVG) -->
-<svg id="worldmap" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1001">
-  <!-- Example subset replaced by full Natural Earth file for brevity -->
-  <!-- Insert full world.svg data here from SimpleMaps or Natural Earth with ISO country codes -->
+<div id="svg-container" aria-hidden="false">Loading map…</div>
 
-  <!-- Interactive target countries -->
-  <path id="US" d="M277.1,257.4 L458.2,252.9 L475.7,275.2 L438.2,313.5 L403.4,316.7 L363.2,307.6 L322.1,289.1 Z" />
-  <path id="CA" d="M250.5,178.7 L478.6,179.4 L495.9,203.3 L462.2,230.8 L414.5,242.5 L359.8,230.2 L300.8,210.3 Z" />
-  <path id="MX" d="M317.6,325.2 L354.8,344.6 L344.3,372.9 L306.1,364.2 L297.4,339.8 Z" />
-  <path id="GB" d="M970.6,179.7 L982.4,171.3 L991.5,181.7 L989.1,193.2 L979.1,197.5 Z" />
-  <path id="FR" d="M1000.2,223.9 L1023.1,224.1 L1032.5,242.7 L1020.9,262.3 L997.8,261.4 L989.4,241.6 Z" />
-  <path id="DE" d="M1043.6,223.1 L1063.8,223.2 L1072.7,242.1 L1061.9,261.9 L1041.8,260.4 L1031.6,242.8 Z" />
-  <path id="IT" d="M1074.9,283.7 L1085.2,295.4 L1074.2,315.8 L1054.6,322.9 L1042.1,301.8 Z" />
-  <path id="CN" d="M1354.6,243.1 L1453.3,243.4 L1482.6,272.8 L1459.8,311.2 L1381.1,309.4 L1352.7,282.5 Z" />
-  <path id="JP" d="M1553.7,260.3 L1563.6,269.7 L1557.3,290.4 L1539.5,289.8 Z" />
-</svg>
+<script>
+  // URL of a detailed world SVG where each country path is assigned an ISO alpha-2 id (US, JP, IT, FR, GB, DE, CA, CN, MX, etc.)
+  // If this URL fails for you, replace it with a different world SVG that has ISO ids.
+  const SVG_URL = 'https://raw.githubusercontent.com/raphaellepuschitz/SVG-World-Map/master/world.svg';
+
+  async function loadAndInitSVG(){
+    const container = document.getElementById('svg-container');
+    try{
+      const res = await fetch(SVG_URL);
+      if(!res.ok) throw new Error('SVG fetch failed: '+res.status);
+      const svgText = await res.text();
+      container.innerHTML = svgText;
+
+      // ensure SVG scales nicely
+      const svg = container.querySelector('svg');
+      if(svg){
+        svg.setAttribute('width','100%');
+        svg.setAttribute('height','auto');
+        svg.style.display = 'block';
+      }
+
+      // list of target countries (ISO alpha-2 codes used in the SVG)
+      const targets = { US: '#3C78D8', JP: '#D80027', IT: '#009246', FR: '#0055A4', GB: '#CF142B', DE: '#FFCC00', CA: '#FF0000', CN: '#DE2910', MX: '#006847' };
+
+      // make all countries silhouette black by default
+      const allPaths = container.querySelectorAll('path, g');
+      allPaths.forEach(el => {
+        // paths inside grouped countries might be <g> with child paths — normalize to set fills on child shapes
+        if(el.tagName.toLowerCase() === 'g'){
+          el.querySelectorAll('path').forEach(p=> p.setAttribute('fill','#000'));
+        } else {
+          // ensure path has a fill
+          if(!el.getAttribute('fill')) el.setAttribute('fill','#000');
+        }
+      });
+
+      // attach interactive behavior only to our targets
+      Object.keys(targets).forEach(code => {
+        // many SVGs use different ID formats (e.g. "US", "us", "country-US", "ISO_USA").
+        // We'll try a few common variants to find the element.
+        const variants = [code, code.toUpperCase(), code.toLowerCase(), 'country-'+code, 'Country-'+code, 'ID_'+code, 'id-'+code, 'iso-'+code];
+        let el = null;
+        for(const v of variants){
+          el = container.querySelector('#'+CSS.escape(v));
+          if(el) break;
+        }
+
+        if(!el){
+          // try to find element by data attribute or by title element text matching
+          const byData = container.querySelector('[data-id="'+code+'"], [data-name="'+code+'"]');
+          if(byData) el = byData;
+        }
+
+        if(!el){
+          // fallback: some SVGs label countries by their full name in lowercase id (e.g. "united-states")
+          const nameMap = { US: ['united-states','united_states','usa','u-s-a'], JP:['japan'], IT:['italy'], FR:['france'], GB:['united-kingdom','uk','great-britain'], DE:['germany'], CA:['canada'], CN:['china'], MX:['mexico'] };
+          const candidates = nameMap[code]||[];
+          for(const cand of candidates){
+            const found = container.querySelector('#'+CSS.escape(cand)) || container.querySelector('[id*="'+cand+'"]');
+            if(found){ el = found; break; }
+          }
+        }
+
+        if(!el) return; // couldn't find that country in this SVG
+
+        // assign interactive class for hover styling (only these will highlight on hover)
+        el.classList.add('interactive-country');
+        // store original fill for reset
+        el.dataset.originalFill = (el.getAttribute('fill') || '#000');
+        el.dataset.toggled = 'false';
+
+        // click toggles color
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          const isOn = el.dataset.toggled === 'true';
+          const color = targets[code];
+          if(el.tagName.toLowerCase() === 'g'){
+            el.querySelectorAll('path').forEach(p=> p.setAttribute('fill', isOn ? p.dataset.originalFill || '#000' : color));
+          } else {
+            el.setAttribute('fill', isOn ? (el.dataset.originalFill || '#000') : color);
+          }
+          el.dataset.toggled = isOn ? 'false' : 'true';
+        });
+
+        // keyboard accessibility
+        if(el.tabIndex === -1) el.tabIndex = 0;
+        el.addEventListener('keydown', ev => { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); el.click(); } });
+      });
+
+      // add CSS for hover highlight for only interactive countries
+      const style = document.createElement('style');
+      style.textContent = `
+        .interactive-country:hover path, .interactive-country:hover { filter: brightness(1.25); }
+        .interactive-country { transition: filter .12s ease, fill .12s ease; }
+      `;
+      document.head.appendChild(style);
+
+    } catch(err){
+      container.innerHTML = '<p style="color:#900">Failed to load SVG map. You can either host a world SVG and set SVG_URL at the top of this file, or paste an inline SVG directly into the page. Error: '+ (err.message || err) +'</p>';
+      console.error(err);
+    }
+  }
+
+  loadAndInitSVG();
+</script>
 
 <div class="legend">
   <div class="item"><div class="swatch" style="background:#3C78D8"></div>USA</div>
