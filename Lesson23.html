@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KGGG Hotel Booking</title>
+  <title>KGG Hotel Booking</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
     .slide { display: none; padding: 20px; }
@@ -21,7 +21,7 @@
     </style>
 </head>
 <body>  <div id="slide1" class="slide active">
-    <h2>KGG Select Number of People</h2>
+    <h2>KGG - Select Number of People</h2>
     <div class="options">
       <div class="option" onclick="selectOption('people', 1)">1 Person</div>
       <div class="option" onclick="selectOption('people', 2)">2 People</div>
@@ -40,7 +40,7 @@
     let currentSlide = 1;
     const selections = { people: null };
 
-    // prices for main categories & sub options
+    // prices for main categories & sub options (5 sub-options per main option)
     const priceData = {
       slide2: generatePrices(),
       slide3: generatePrices(),
@@ -50,16 +50,25 @@
     };
 
     function generatePrices() {
+      // same 5 prices for each sub-option set — you can change these later
       return [1,2,3,4].map(() => [100,150,200,250,300]);
     }
 
     function showSlide(n) {
+      // normalize 'final' reference
+      if (n === 'final') {
+        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+        document.getElementById('final-slide').classList.add('active');
+        return;
+      }
+
       document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-      const target = document.getElementById('slide' + n) || document.getElementById('final-slide');
-      target.classList.add('active');
+      const el = document.getElementById('slide' + n);
+      if (el) el.classList.add('active');
     }
 
     function nextSlide() {
+      // if we're on slide 6, go to summary
       if (currentSlide === 6) { generateSummary(); currentSlide = 'final'; showSlide('final'); return; }
       currentSlide++;
       showSlide(currentSlide);
@@ -71,86 +80,57 @@
       showSlide(currentSlide);
     }
 
-    function selectOption(category, value) {
+    function selectOption(category, value, el) {
+      // store and visually mark the choice for single-selection categories (like people)
       selections[category] = value;
-      enableNext(currentSlide);
-    }(category, value) {
-      selections[category] = value;
+
+      // clear previously selected visuals for that category
+      const parent = el && el.parentElement;
+      if (parent) {
+        parent.querySelectorAll('.option').forEach(o => o.classList.remove('selected-main'));
+        el.classList.add('selected-main');
+      }
     }
 
     function showSubOptions(slide, parentOption) {
+      // hide every sub-options box for that slide, then show the chosen one
+      document.querySelectorAll(`#slide${slide} .sub-options-box`).forEach(x => x.style.display = 'none');
       const box = document.getElementById(`suboptions-${slide}-${parentOption}`);
-      document.querySelectorAll('.sub-options-box').forEach(x => x.style.display = 'none');
-      box.style.display = 'block';
+      if (box) box.style.display = 'block';
     }
 
-    function chooseSub(slide, parent, subIndex) {
-      selections[`slide${slide}`] = priceData[`slide${slide}`][parent - 1][subIndex];
+    function chooseSub(slide, parent, subIndex, el) {
+      // store price for that slide (only one allowed)
+      const price = priceData[`slide${slide}`][parent - 1][subIndex];
+      selections[`slide${slide}`] = price;
 
-      document.querySelectorAll(`#slide${slide} .sub-option`).forEach(s => s.style.borderColor = "transparent");
+      // clear highlights for that slide's sub-options, then highlight the clicked one
+      document.querySelectorAll(`#slide${slide} .sub-option`).forEach(s => s.classList.remove('chosen-sub'));
+      if (el) el.classList.add('chosen-sub');
 
-      const chosen = document.querySelector(`#suboptions-${slide}-${parent} .sub-option:nth-child(${subIndex + 1})`);
-      if (chosen) chosen.style.borderColor = "green";
-
+      // mark the main option as completed (single main option highlighted per slide)
       const mainOptions = document.querySelectorAll(`#slide${slide} .option`);
-      mainOptions.forEach(el => el.classList.remove("selected-main"));
-      mainOptions[parent - 1].classList.add("selected-main");
-
-      enableNext(slide);
-    }(slide, parent, subIndex) {
-      // store price
-      selections[`slide${slide}`] = priceData[`slide${slide}`][parent - 1][subIndex];
-
-      // remove all highlights in ALL sub-option boxes of this slide
-      document.querySelectorAll(`#slide${slide} .sub-option`).forEach(s => s.style.borderColor = "transparent");
-
-      // highlight only chosen sub-option
-      const chosen = document.querySelector(`#suboptions-${slide}-${parent} .sub-option:nth-child(${subIndex + 1})`);
-      if (chosen) chosen.style.borderColor = "green";
-
-      // indicate completed main option
-      const mainOptions = document.querySelectorAll(`#slide${slide} .option`);
-      mainOptions.forEach(el => el.classList.remove("selected-main"));
-      mainOptions[parent - 1].classList.add("selected-main");
-    }`] = priceData[`slide${slide}`][parent - 1][subIndex];
-
-      // clear previous highlights
-      document.querySelectorAll(`#suboptions-${slide}-${parent} .sub-option`).forEach(s => s.style.borderColor = "transparent");
-
-      // highlight chosen
-      const chosen = document.querySelector(`#suboptions-${slide}-${parent} .sub-option:nth-child(${subIndex + 1})`);
-      if (chosen) chosen.style.borderColor = "green";
-
-      // add indicator on main option
-      const mainOptions = document.querySelectorAll(`#slide${slide} .option`);
-      mainOptions.forEach(el => el.classList.remove("selected-main"));
-      mainOptions[parent - 1].classList.add("selected-main");
-    }(slide, parent, subIndex) {
-      selections[`slide${slide}`] = priceData[`slide${slide}`][parent - 1][subIndex];
-      (`Selected sub option with price $${ selections[`slide${slide}`] }`);
+      mainOptions.forEach(o => o.classList.remove('selected-main'));
+      if (mainOptions[parent - 1]) mainOptions[parent - 1].classList.add('selected-main');
     }
 
     function generateSummary() {
       let total = 0;
       Object.keys(selections).forEach(k => { if (k !== 'people') total += selections[k] || 0; });
-      total *= selections.people;
+      const people = selections.people || 1;
+      total *= people;
 
       document.getElementById('summary-box').innerHTML = `
-        <p><strong>People:</strong> ${selections.people}</p>
+        <p><strong>People:</strong> ${people}</p>
         <p><strong>Final Price:</strong> $${total}</p>
       `;
     }
 
-    // Auto‑generate slides 2–6
-    function enableNext(slide) {
-      const btn = document.querySelector(`#slide${slide} .next-btn`);
-      if (btn) btn.disabled = false;
-    }
-
+    // Auto-generate slides 2–6 with 4 main options each and 5 sub-options each
     function generateSlides() {
-      let container = document.body;
+      const container = document.body;
       for (let i = 2; i <= 6; i++) {
-        let slide = document.createElement('div');
+        const slide = document.createElement('div');
         slide.id = 'slide' + i;
         slide.className = 'slide';
 
@@ -172,12 +152,18 @@
             <div class="sub-options-box" id="suboptions-${i}-${opt}">
               <h3>Choose a sub option for Option ${opt}</h3>
               <div class="options">
-                ${priceData[`slide${i}`][opt - 1].map((price, index) => `
-                  <div class='sub-option' onclick='chooseSub(${i}, ${opt}, ${index})'>
-                    <div class='image-placeholder'></div>
-                    Sub Option ${index + 1} - $${price}
-                  </div>
-                `).join('')}
+          `;
+
+          priceData[`slide${i}`][opt - 1].forEach((price, index) => {
+            html += `
+                <div class='sub-option' onclick='chooseSub(${i}, ${opt}, ${index}, this)'>
+                  <div class='image-placeholder'></div>
+                  Sub Option ${index + 1} - $${price}
+                </div>
+            `;
+          });
+
+          html += `
               </div>
             </div>
           `;
@@ -186,15 +172,37 @@
         html += `
           <div class="nav-buttons">
             <button class="back" onclick="prevSlide()">Back</button>
-            <button class=\"next next-btn\" onclick=\"nextSlide()\" ">Next</button>
+            <button class="next" onclick="nextSlide()">Next</button>
           </div>
         `;
 
         slide.innerHTML = html;
         container.appendChild(slide);
       }
+
+      // make sure Slide 1 Next is a normal working button (in case HTML was malformed earlier)
+      const slide1Next = document.querySelector('#slide1 .next');
+      if (slide1Next) {
+        slide1Next.disabled = false;
+        slide1Next.onclick = nextSlide;
+      }
+
+      // attach simple click handlers for the people options (slide1) so the element is passed
+      document.querySelectorAll('#slide1 .option').forEach((el, idx) => {
+        el.onclick = () => selectOption('people', idx+1, el);
+      });
+
+      // small visual styles for chosen elements (inlined so script sets them reliably)
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .selected-main { border-color: green !important; }
+        .chosen-sub { border-color: green !important; }
+      `;
+      document.head.appendChild(style);
     }
 
     generateSlides();
+    // show initial slide
+    showSlide(1);
   </script></body>
 </html>
