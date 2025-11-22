@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KGG Hotel Booking</title>
+  <title>Fake Hotel Booking</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
     .slide { display: none; padding: 20px; }
@@ -21,7 +21,7 @@
     </style>
 </head>
 <body>  <div id="slide1" class="slide active">
-    <h2>KGG - Select Number of People</h2>
+    <h2>KGGG -Select Number of People</h2>
     <div class="options">
       <div class="option" onclick="selectOption('people', 1)">1 Person</div>
       <div class="option" onclick="selectOption('people', 2)">2 People</div>
@@ -55,12 +55,46 @@
     }
 
     function showSlide(n) {
-      // normalize 'final' reference
-      if (n === 'final') {
-        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-        document.getElementById('final-slide').classList.add('active');
-        return;
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById('slide' + n) || document.getElementById('final-slide');
+      target.classList.add('active');
+
+      // Reapply previously selected main + sub options
+      if (n >= 2 && n <= 6) {
+        const savedPrice = selections[`slide${n}`];
+        if (savedPrice) {
+          const priceList = priceData[`slide${n}`];
+          let parentIndex = null;
+          let subIndex = null;
+
+          // Find parent + sub that match saved price
+          priceList.forEach((arr, p) => {
+            const idx = arr.indexOf(savedPrice);
+            if (idx !== -1) {
+              parentIndex = p;
+              subIndex = idx;
+            }
+          });
+
+          if (parentIndex !== null) {
+            // Highlight main option
+            const mainOptions = target.querySelectorAll('.option');
+            mainOptions.forEach(el => el.classList.remove('selected-main'));
+            mainOptions[parentIndex].classList.add('selected-main');
+
+            // Show correct sub box
+            const subBox = target.querySelector(`#suboptions-${n}-${parentIndex+1}`);
+            document.querySelectorAll(`#slide${n} .sub-options-box`).forEach(x => x.style.display = 'none');
+            if (subBox) subBox.style.display = 'block';
+
+            // Highlight sub option
+            const subOptions = subBox.querySelectorAll('.sub-option');
+            subOptions.forEach(el => el.style.borderColor = 'transparent');
+            if (subOptions[subIndex]) subOptions[subIndex].style.borderColor = 'green';
+          }
+        }
       }
+    }
 
       document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
       const el = document.getElementById('slide' + n);
