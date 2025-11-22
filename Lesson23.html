@@ -6,7 +6,7 @@
 <title>Fake Hotel Booking</title>
 <style>
   body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
-  .container { max-width: 900px; margin:20px auto; padding:16px; }
+  .container { max-width:900px; margin:20px auto; padding:16px; }
   .slide { display:none; padding:20px; background:#fff; border-radius:10px; }
   .slide.active { display:block; }
   h2 { margin-bottom:16px; }
@@ -17,6 +17,7 @@
   .nav-buttons { display:flex; justify-content:space-between; margin-top:20px; }
   button { padding:10px 20px; border:none; border-radius:6px; background:orange; color:white; cursor:pointer; }
   .back-btn { background:#ccc; color:black; }
+  .sub-options-box { display:none; margin-top:10px; padding:10px; background:#f9f9f9; border-radius:8px; }
   .summary-box { background:#f9f9f9; padding:15px; border-radius:8px; }
 </style>
 </head>
@@ -37,18 +38,45 @@
     </div>
   </div>
 
-  <!-- Slide 2-6: Main Options with Sub Options -->
+  <!-- Slide 2-5: Main Options with Sub Options -->
   <div class="slide" id="slide2">
-    <h2>Select Option for Room</h2>
-    <div class="options" id="main-options"></div>
+    <h2>Option 1</h2>
+    <div class="options" id="main-options-1"></div>
     <div class="nav-buttons">
       <button class="back-btn" id="back2">Back</button>
       <button id="next2">Next</button>
     </div>
   </div>
 
-  <!-- Slide 7: Summary -->
-  <div class="slide" id="summary-slide">
+  <div class="slide" id="slide3">
+    <h2>Option 2</h2>
+    <div class="options" id="main-options-2"></div>
+    <div class="nav-buttons">
+      <button class="back-btn" id="back3">Back</button>
+      <button id="next3">Next</button>
+    </div>
+  </div>
+
+  <div class="slide" id="slide4">
+    <h2>Option 3</h2>
+    <div class="options" id="main-options-3"></div>
+    <div class="nav-buttons">
+      <button class="back-btn" id="back4">Back</button>
+      <button id="next4">Next</button>
+    </div>
+  </div>
+
+  <div class="slide" id="slide5">
+    <h2>Option 4</h2>
+    <div class="options" id="main-options-4"></div>
+    <div class="nav-buttons">
+      <button class="back-btn" id="back5">Back</button>
+      <button id="next5">Next</button>
+    </div>
+  </div>
+
+  <!-- Slide 6: Summary -->
+  <div class="slide" id="slide6">
     <h2>Booking Summary</h2>
     <div class="summary-box" id="summary-box"></div>
     <div class="nav-buttons">
@@ -59,16 +87,16 @@
 </div>
 
 <script>
-const selections = { people: null, mainOption: null, subOption: null };
-const mainOptionsData = [1,2,3,4]; // main option labels
-const subOptionsData = [1,2,3,4,5]; // sub option labels
+const selections = { people:null, slide2:null, slide3:null, slide4:null, slide5:null };
+const subOptions = [1,2,3,4,5]; // example sub options
 
+// Show slide
 function showSlide(id) {
   document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// People selection
+// --- People selection ---
 document.querySelectorAll('.people-option').forEach(el => {
   el.addEventListener('click', () => {
     selections.people = el.dataset.value;
@@ -77,84 +105,84 @@ document.querySelectorAll('.people-option').forEach(el => {
   });
 });
 
-// Next from Slide 1
 document.getElementById('next1').addEventListener('click', () => {
-  if(!selections.people) { alert("Please select number of people"); return; }
-  generateMainOptions();
+  if(!selections.people){ alert("Select number of people"); return; }
+  generateMainOptions(2);
   showSlide('slide2');
 });
 
-// Back to Slide 1
-document.getElementById('back2').addEventListener('click', () => showSlide('slide1'));
-
-// Next to Summary
-document.getElementById('next2').addEventListener('click', () => {
-  if(!selections.mainOption || !selections.subOption) { alert("Please select an option and sub-option"); return; }
-  showSummary();
-  showSlide('summary-slide');
-});
-
-// Back to Start
-document.getElementById('back-summary').addEventListener('click', () => {
-  selections.people = selections.mainOption = selections.subOption = null;
-  document.querySelectorAll('.people-option, .option, .sub-option').forEach(b => b.classList.remove('selected'));
-  showSlide('slide1');
-});
-
-// Generate main options + sub options
-function generateMainOptions() {
-  const container = document.getElementById('main-options');
+// --- Generate main + sub options per slide ---
+function generateMainOptions(slideNum){
+  const container = document.getElementById(`main-options-${slideNum-1}`);
   container.innerHTML = '';
-  mainOptionsData.forEach((opt,index) => {
-    const div = document.createElement('div');
-    div.className = 'option';
-    div.innerHTML = `<div class="image-placeholder"></div>Option ${opt}<div class="sub-options" style="display:none; margin-top:8px;"></div>`;
-    container.appendChild(div);
-
-    const subContainer = div.querySelector('.sub-options');
-    subOptionsData.forEach(sub => {
+  for(let i=1;i<=4;i++){
+    const mainDiv = document.createElement('div');
+    mainDiv.className = 'option';
+    mainDiv.innerHTML = `<div class="image-placeholder"></div>Main Option ${i}<div class="sub-options-box"></div>`;
+    container.appendChild(mainDiv);
+    const subContainer = mainDiv.querySelector('.sub-options-box');
+    subOptions.forEach(s=>{
       const subDiv = document.createElement('div');
       subDiv.className = 'sub-option';
-      subDiv.innerHTML = `<div class="image-placeholder"></div>Sub Option ${sub} - $${sub*50}`;
-      subDiv.addEventListener('click', (e) => {
+      subDiv.innerHTML = `Sub Option ${s} - $${s*50}`;
+      subDiv.addEventListener('click', (e)=>{
         e.stopPropagation();
-        selections.mainOption = opt;
-        selections.subOption = sub;
-        // highlight selected
-        document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-        document.querySelectorAll('.sub-option').forEach(s => s.classList.remove('selected'));
-        div.classList.add('selected');
+        selections[`slide${slideNum}`] = s;
+        container.querySelectorAll('.sub-option').forEach(x=>x.classList.remove('selected'));
+        container.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));
+        mainDiv.classList.add('selected');
         subDiv.classList.add('selected');
       });
       subContainer.appendChild(subDiv);
     });
-
-    div.addEventListener('click', () => {
-      const allSubs = document.querySelectorAll('.sub-options');
-      allSubs.forEach(s => s.style.display='none');
+    mainDiv.addEventListener('click', ()=> {
+      container.querySelectorAll('.sub-options-box').forEach(x=>x.style.display='none');
       subContainer.style.display = 'block';
     });
-  });
-
-  // restore previous selection if any
-  if(selections.mainOption && selections.subOption){
-    const mainDiv = Array.from(container.children).find(c => c.innerText.includes(selections.mainOption));
-    if(mainDiv){
-      mainDiv.classList.add('selected');
-      const subDiv = Array.from(mainDiv.querySelectorAll('.sub-option')).find(s=>s.innerText.includes(selections.subOption));
-      if(subDiv) subDiv.classList.add('selected');
-    }
   }
 }
 
-// Show summary
-function showSummary() {
-  const total = (selections.subOption*50) * selections.people;
-  document.getElementById('summary-box').innerHTML = `
+// --- Next/Back buttons ---
+document.getElementById('back2').addEventListener('click', ()=>showSlide('slide1'));
+document.getElementById('next2').addEventListener('click', ()=>{
+  if(!selections.slide2){ alert("Select a sub option"); return; }
+  generateMainOptions(3);
+  showSlide('slide3');
+});
+document.getElementById('back3').addEventListener('click', ()=>showSlide('slide2'));
+document.getElementById('next3').addEventListener('click', ()=>{
+  if(!selections.slide3){ alert("Select a sub option"); return; }
+  generateMainOptions(4);
+  showSlide('slide4');
+});
+document.getElementById('back4').addEventListener('click', ()=>showSlide('slide3'));
+document.getElementById('next4').addEventListener('click', ()=>{
+  if(!selections.slide4){ alert("Select a sub option"); return; }
+  generateMainOptions(5);
+  showSlide('slide5');
+});
+document.getElementById('back5').addEventListener('click', ()=>showSlide('slide4'));
+document.getElementById('next5').addEventListener('click', ()=>{
+  if(!selections.slide5){ alert("Select a sub option"); return; }
+  showSummary();
+  showSlide('slide6');
+});
+document.getElementById('back-summary').addEventListener('click', ()=>{
+  Object.keys(selections).forEach(k=>selections[k]=null);
+  document.querySelectorAll('.people-option,.option,.sub-option').forEach(x=>x.classList.remove('selected'));
+  showSlide('slide1');
+});
+
+// --- Show summary ---
+function showSummary(){
+  const summaryBox = document.getElementById('summary-box');
+  summaryBox.innerHTML = `
     <p><strong>People:</strong> ${selections.people}</p>
-    <p><strong>Main Option:</strong> ${selections.mainOption}</p>
-    <p><strong>Sub Option:</strong> ${selections.subOption} - $${selections.subOption*50}</p>
-    <p><strong>Total Price:</strong> $${total}</p>
+    <p><strong>Option 1:</strong> Sub Option ${selections.slide2} - $${selections.slide2*50}</p>
+    <p><strong>Option 2:</strong> Sub Option ${selections.slide3} - $${selections.slide3*50}</p>
+    <p><strong>Option 3:</strong> Sub Option ${selections.slide4} - $${selections.slide4*50}</p>
+    <p><strong>Option 4:</strong> Sub Option ${selections.slide5} - $${selections.slide5*50}</p>
+    <p><strong>Total:</strong> $${(selections.slide2+selections.slide3+selections.slide4+selections.slide5)*50*selections.people}</p>
   `;
 }
 </script>
