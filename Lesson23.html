@@ -30,7 +30,7 @@
     </div>
     <div class="nav-buttons">
       <div></div>
-      <button class="next" onclick="nextSlide()">Next</button>
+      <button class=\"next next-btn\" onclick=\"nextSlide()\" disabled()">Next</button>
     </div>
   </div>  <!-- Final Summary Slide -->  <div id="final-slide" class="slide">
     <h2>Booking Summary</h2>
@@ -73,6 +73,9 @@
 
     function selectOption(category, value) {
       selections[category] = value;
+      enableNext(currentSlide);
+    }(category, value) {
+      selections[category] = value;
     }
 
     function showSubOptions(slide, parentOption) {
@@ -82,8 +85,34 @@
     }
 
     function chooseSub(slide, parent, subIndex) {
+      selections[`slide${slide}`] = priceData[`slide${slide}`][parent - 1][subIndex];
+
+      document.querySelectorAll(`#slide${slide} .sub-option`).forEach(s => s.style.borderColor = "transparent");
+
+      const chosen = document.querySelector(`#suboptions-${slide}-${parent} .sub-option:nth-child(${subIndex + 1})`);
+      if (chosen) chosen.style.borderColor = "green";
+
+      const mainOptions = document.querySelectorAll(`#slide${slide} .option`);
+      mainOptions.forEach(el => el.classList.remove("selected-main"));
+      mainOptions[parent - 1].classList.add("selected-main");
+
+      enableNext(slide);
+    }(slide, parent, subIndex) {
       // store price
       selections[`slide${slide}`] = priceData[`slide${slide}`][parent - 1][subIndex];
+
+      // remove all highlights in ALL sub-option boxes of this slide
+      document.querySelectorAll(`#slide${slide} .sub-option`).forEach(s => s.style.borderColor = "transparent");
+
+      // highlight only chosen sub-option
+      const chosen = document.querySelector(`#suboptions-${slide}-${parent} .sub-option:nth-child(${subIndex + 1})`);
+      if (chosen) chosen.style.borderColor = "green";
+
+      // indicate completed main option
+      const mainOptions = document.querySelectorAll(`#slide${slide} .option`);
+      mainOptions.forEach(el => el.classList.remove("selected-main"));
+      mainOptions[parent - 1].classList.add("selected-main");
+    }`] = priceData[`slide${slide}`][parent - 1][subIndex];
 
       // clear previous highlights
       document.querySelectorAll(`#suboptions-${slide}-${parent} .sub-option`).forEach(s => s.style.borderColor = "transparent");
@@ -98,7 +127,7 @@
       mainOptions[parent - 1].classList.add("selected-main");
     }(slide, parent, subIndex) {
       selections[`slide${slide}`] = priceData[`slide${slide}`][parent - 1][subIndex];
-      alert(`Selected sub option with price $${ selections[`slide${slide}`] }`);
+      (`Selected sub option with price $${ selections[`slide${slide}`] }`);
     }
 
     function generateSummary() {
@@ -113,6 +142,11 @@
     }
 
     // Auto‑generate slides 2–6
+    function function enableNext(slide) {
+      const btn = document.querySelector(`#slide${slide} .next-btn`);
+      if (btn) btn.disabled = false;
+    }
+
     function generateSlides() {
       let container = document.body;
       for (let i = 2; i <= 6; i++) {
@@ -152,7 +186,7 @@
         html += `
           <div class="nav-buttons">
             <button class="back" onclick="prevSlide()">Back</button>
-            <button class="next" onclick="nextSlide()">Next</button>
+            <button class=\"next next-btn\" onclick=\"nextSlide()\" disabled()">Next</button>
           </div>
         `;
 
