@@ -1,30 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 23</title>
-  <link rel="stylesheet" href="Styles\styles1.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fake Hotel Booking</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+    .slide { display: none; padding: 20px; }
+    .active { display: block; }
+    .options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+    .option, .sub-option { background: white; padding: 15px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; }
+    .option:hover, .sub-option:hover { border-color: orange; }
+    .image-placeholder { width: 100%; height: 120px; background: orange; border-radius: 8px; margin-bottom: 10px; }
+    .nav-buttons { margin-top: 20px; display: flex; justify-content: space-between; }
+    button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
+    .back { background: #ccc; }
+    .next { background: orange; color: white; }
+    .sub-options-box { margin-top: 20px; padding: 15px; background: #fff; border-radius: 10px; display: none; }
+    .summary { background: #fff; padding: 20px; border-radius: 10px; }
+  </style>
 </head>
 <body>
-  <div class="card-container">
-    <div class="card">
-      <div class="word">
-        <div class="furigana">たべる</div>
-        <div class="kanji">食べる</div>
-      </div>
-      <p></p>
-      <div id="translation" class="translation hidden">Eat</div>
+
+  <div id="slide1" class="slide active">
+    <h2>Select Number of People</h2>
+    <div class="options">
+      <div class="option" onclick="selectOption('people', 1)">1 Person</div>
+      <div class="option" onclick="selectOption('people', 2)">2 People</div>
+      <div class="option" onclick="selectOption('people', 3)">3 People</div>
+      <div class="option" onclick="selectOption('people', 4)">4 People</div>
     </div>
-    <div class="navigation-buttons">
-      <button id="prevBtn" tooltip="Previous">⏮️</button><a>     </a>
-      <button id="revealBtn" tooltip="Reveal">👁️</button><a>     </a>
-      <button id="nextBtn" tooltip="Next">⏭️</button>
+    <div class="nav-buttons">
+      <div></div>
+      <button class="next" onclick="nextSlide()">Next</button>
     </div>
   </div>
-  <br>
-  
 
-  <script src="Scripts/script23.js"></script>
+  <!-- Final Summary Slide -->
+  <div id="final-slide" class="slide">
+    <h2>Booking Summary</h2>
+    <div class="summary" id="summary-box"></div>
+    <button class="back" onclick="prevSlide()">Back</button>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const selections = { people: null };
+
+    // prices for main categories & sub options
+    const priceData = {
+      slide2: generatePrices(),
+      slide3: generatePrices(),
+      slide4: generatePrices(),
+      slide5: generatePrices(),
+      slide6: generatePrices(),
+    };
+
+    function generatePrices() {
+      return [1,2,3,4].map(() => [100,150,200,250,300]);
+    }
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById('slide' + n) || document.getElementById('final-slide');
+      target.classList.add('active');
+    }
+
+    function nextSlide() {
+      if (currentSlide === 6) { generateSummary(); currentSlide = 'final'; showSlide('final'); return; }
+      currentSlide++;
+      showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      if (currentSlide === 'final') { currentSlide = 6; showSlide(6); return; }
+      if (currentSlide > 1) currentSlide--;
+      showSlide(currentSlide);
+    }
+
+    function selectOption(category, value) {
+      selections[category] = value;
+    }
+
+    function showSubOptions(slide, parentOption) {
+      const box = document.getElementById(`suboptions-${slide}-${parentOption}`);
+      document.querySelectorAll('.sub-options-box').forEach(x => x.style.display = 'none');
+      box.style.display = 'block';
+    }
+
+    function chooseSub(slide, parent, subIndex) {
+      selections[`slide${slide}`] = priceData[`slide${slide}`][parent - 1][subIndex];
+      alert(`Selected sub option with price $${ selections[`slide${slide}`] }`);
+    }
+
+    function generateSummary() {
+      let total = 0;
+      Object.keys(selections).forEach(k => { if (k !== 'people') total += selections[k] || 0; });
+      total *= selections.people;
+
+      document.getElementById('summary-box').innerHTML = `
+        <p><strong>People:</strong> ${selections.people}</p>
+        <p><strong>Final Price:</strong> $${total}</p>
+      `;
+    }
+
+    // Auto‑generate slides 2–6
+    function generateSlides() {
+      let container = document.body;
+      for (let i = 2; i <= 6; i++) {
+        let slide = document.createElement('div');
+        slide.id = 'slide' + i;
+        slide.className = 'slide';
+
+        let html = `<h2>Slide ${i}: Choose an Option</h2><div class="options">`;
+
+        for (let opt = 1; opt <= 4; opt++) {
+          html += `
+            <div class="option" onclick="showSubOptions(${i}, ${opt})">
+              <div class='image-placeholder'></div>
+              Option ${opt}
+            </div>
+          `;
+        }
+
+        html += `</div>`;
+
+        for (let opt = 1; opt <= 4; opt++) {
+          html += `
+            <div class="sub-options-box" id="suboptions-${i}-${opt}">
+              <h3>Choose a sub option for Option ${opt}</h3>
+              <div class="options">
+                ${priceData[`slide${i}`][opt - 1].map((price, index) => `
+                  <div class='sub-option' onclick='chooseSub(${i}, ${opt}, ${index})'>
+                    <div class='image-placeholder'></div>
+                    Sub Option ${index + 1} - $${price}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        html += `
+          <div class="nav-buttons">
+            <button class="back" onclick="prevSlide()">Back</button>
+            <button class="next" onclick="nextSlide()">Next</button>
+          </div>
+        `;
+
+        slide.innerHTML = html;
+        container.appendChild(slide);
+      }
+    }
+
+    generateSlides();
+  </script>
 </body>
 </html>
