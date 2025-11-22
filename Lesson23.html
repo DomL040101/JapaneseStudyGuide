@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,11 +17,10 @@
     .next { background: orange; color: white; }
     .sub-options-box { margin-top: 20px; padding: 15px; background: #fff; border-radius: 10px; display: none; }
     .summary { background: #fff; padding: 20px; border-radius: 10px; }
-  </style>
+  .selected-main { border-color: green !important; }
+    </style>
 </head>
-<body>
-
-  <div id="slide1" class="slide active">
+<body>  <div id="slide1" class="slide active">
     <h2>Select Number of People</h2>
     <div class="options">
       <div class="option" onclick="selectOption('people', 1)">1 Person</div>
@@ -34,16 +32,11 @@
       <div></div>
       <button class="next" onclick="nextSlide()">Next</button>
     </div>
-  </div>
-
-  <!-- Final Summary Slide -->
-  <div id="final-slide" class="slide">
+  </div>  <!-- Final Summary Slide -->  <div id="final-slide" class="slide">
     <h2>Booking Summary</h2>
     <div class="summary" id="summary-box"></div>
     <button class="back" onclick="prevSlide()">Back</button>
-  </div>
-
-  <script>
+  </div>  <script>
     let currentSlide = 1;
     const selections = { people: null };
 
@@ -89,6 +82,21 @@
     }
 
     function chooseSub(slide, parent, subIndex) {
+      // store price
+      selections[`slide${slide}`] = priceData[`slide${slide}`][parent - 1][subIndex];
+
+      // clear previous highlights
+      document.querySelectorAll(`#suboptions-${slide}-${parent} .sub-option`).forEach(s => s.style.borderColor = "transparent");
+
+      // highlight chosen
+      const chosen = document.querySelector(`#suboptions-${slide}-${parent} .sub-option:nth-child(${subIndex + 1})`);
+      if (chosen) chosen.style.borderColor = "green";
+
+      // add indicator on main option
+      const mainOptions = document.querySelectorAll(`#slide${slide} .option`);
+      mainOptions.forEach(el => el.classList.remove("selected-main"));
+      mainOptions[parent - 1].classList.add("selected-main");
+    }(slide, parent, subIndex) {
       selections[`slide${slide}`] = priceData[`slide${slide}`][parent - 1][subIndex];
       alert(`Selected sub option with price $${ selections[`slide${slide}`] }`);
     }
@@ -154,6 +162,5 @@
     }
 
     generateSlides();
-  </script>
-</body>
+  </script></body>
 </html>
