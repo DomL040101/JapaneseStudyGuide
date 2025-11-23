@@ -1,201 +1,719 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fake Hotel Booking</title>
-<style>
-  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
-  .container { max-width:900px; margin:20px auto; padding:16px; }
-  .slide { display:none; padding:20px; background:#fff; border-radius:10px; min-height:300px; position:relative; }
-  .slide.active { display:block; }
-  h2 { margin-bottom:16px; }
-  .options { display:grid; grid-template-columns: repeat(2, 1fr); gap:15px; margin-bottom:20px; }
-  .option, .sub-option, .people-option { background:#fff; border:2px solid #ccc; border-radius:8px; padding:12px; cursor:pointer; text-align:center; transition:0.2s; }
-  .option.selected, .sub-option.selected, .people-option.selected { border-color:green; background:#e6ffe6; }
-  .image-placeholder { width:100%; height:80px; background:orange; margin-bottom:8px; border-radius:6px; }
-  .nav-buttons { display:flex; justify-content:space-between; margin-top:20px; }
-  button { padding:10px 20px; border:none; border-radius:6px; background:orange; color:white; cursor:pointer; }
-  .back-btn { background:#ccc; color:black; }
-  .sub-options-container { margin-top:20px; display:none; }
-  .summary-box { background:#f9f9f9; padding:15px; border-radius:8px; }
-</style>
-</head>
-<body>
-<div class="container">
-  <!-- Slide 1: Number of People -->
-  <div class="slide active" id="slide1">
-    <h2>Select Number of People</h2>
-    <div class="options" id="people-options">
-      <div class="people-option" data-value="1">1 Person</div>
-      <div class="people-option" data-value="2">2 People</div>
-      <div class="people-option" data-value="3">3 People</div>
-      <div class="people-option" data-value="4">4 People</div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>KGG Hotel</title>
+    <style>
+      :root {
+        --accent: orange;
+        --ok: green;
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      .slide {
+        display: none;
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-sizing: border-box;
+        min-height: 320px;
+      }
+      .slide.active {
+        display: block;
+      }
+      h2 {
+        margin: 0 0 12px;
+      }
+      .options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      .option {
+        background: #fff;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        padding: 12px;
+        cursor: pointer;
+        box-sizing: border-box;
+        transition: box-shadow 0.12s;
+      }
+      .option:hover {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      }
+      .option.selected {
+        border-color: var(--ok);
+        background: #ecffef;
+      }
+      .main-image,
+      .sub-image {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        display: block;
+        margin-bottom: 10px;
+        background: orange;
+      }
+      .sub-options-container {
+        margin-top: 18px;
+        padding-top: 12px;
+        border-top: 1px solid #eee;
+        display: none;
+      }
+      .sub-option {
+        background: #fff;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .sub-option img {
+        width: 110px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .sub-option .meta {
+        flex: 1;
+      }
+      .sub-option.selected {
+        border-color: var(--ok);
+        background: #ecffef;
+      }
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 18px;
+        gap: 12px;
+      }
+      button {
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: 0;
+        cursor: pointer;
+        background: var(--accent);
+        color: #fff;
+      }
+      button.secondary {
+        background: #ddd;
+        color: #111;
+      }
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .summary-item {
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .summary-item img {
+        width: 110px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+      @media (max-width: 720px) {
+        .options {
+          grid-template-columns: 1fr;
+        }
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- Slide 1: people -->
+      <div id="slide-1" class="slide active">
+        <h2>Number of people</h2>
+        <div class="options" id="people-list">
+          <div class="option people-btn" data-people="1">1 Person</div>
+          <div class="option people-btn" data-people="2">2 People</div>
+          <div class="option people-btn" data-people="3">3 People</div>
+          <div class="option people-btn" data-people="4">4 People</div>
+          <div class="option people-btn" data-people="5">5 Person</div>
+          <div class="option people-btn" data-people="6">6 People</div>
+          <div class="option people-btn" data-people="7">7 People</div>
+          <div class="option people-btn" data-people="8">8 People</div>
+          <div class="option people-btn" data-people="9">9 Person</div>
+          <div class="option people-btn" data-people="10">10 People</div>
+        </div>
+        <div class="nav">
+          <div></div>
+          <button id="next-1">Next</button>
+        </div>
+      </div>
+
+      <!-- Slides 2..7 generated from bookingSlides object -->
+      <div id="slide-2" class="slide">
+        <h2 id="title-2">Which room type?</h2>
+        <div class="options" id="main-2"></div>
+        <div class="sub-options-container" id="sub-2"></div>
+        <div class="nav">
+          <button class="secondary" data-back="2">Back</button>
+          <button id="next-2">Next</button>
+        </div>
+      </div>
+
+      <div id="slide-3" class="slide">
+        <h2 id="title-3">Which restaurant?</h2>
+        <div class="options" id="main-3"></div>
+        <div class="sub-options-container" id="sub-3"></div>
+        <div class="nav">
+          <button class="secondary" data-back="3">Back</button>
+          <button id="next-3">Next</button>
+        </div>
+      </div>
+
+      <div id="slide-4" class="slide">
+        <h2 id="title-4">Which event?</h2>
+        <div class="options" id="main-4"></div>
+        <div class="sub-options-container" id="sub-4"></div>
+        <div class="nav">
+          <button class="secondary" data-back="4">Back</button>
+          <button id="next-4">Next</button>
+        </div>
+      </div>
+
+      <div id="slide-5" class="slide">
+        <h2 id="title-5">Which shop?</h2>
+        <div class="options" id="main-5"></div>
+        <div class="sub-options-container" id="sub-5"></div>
+        <div class="nav">
+          <button class="secondary" data-back="5">Back</button>
+          <button id="next-5">Next</button>
+        </div>
+      </div>
+
+      <div id="slide-6" class="slide">
+        <h2 id="title-6">Which tourist spot?</h2>
+        <div class="options" id="main-6"></div>
+        <div class="sub-options-container" id="sub-6"></div>
+        <div class="nav">
+          <button class="secondary" data-back="6">Back</button>
+          <button id="next-6">Next</button>
+        </div>
+      </div>
+
+
+
+      <!-- Summary (unique ID) -->
+      <div id="summary-slide" class="slide">
+        <h2>Summary</h2>
+        <div id="summary-area"></div>
+        <div class="nav" style="margin-top: 18px">
+          <button class="secondary" id="back-summary">Back to Start</button>
+          <div></div>
+        </div>
+      </div>
     </div>
-    <div class="nav-buttons">
-      <div></div>
-      <button id="next1">Next</button>
-    </div>
-  </div>
 
-  <!-- Slide 2-5: Main Options -->
-  <div class="slide" id="slide2">
-    <h2>Option 1</h2>
-    <div class="options" id="main-options-2"></div>
-    <div class="sub-options-container" id="sub-options-2"></div>
-    <div class="nav-buttons">
-      <button class="back-btn" id="back2">Back</button>
-      <button id="next2">Next</button>
-    </div>
-  </div>
+    <script>
+      /* placeholder tiny orange SVG (base64) used for demo */
+      const PLACEHOLDER =
+        "data:image/svg+xml;base64," +
+        btoa(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="240">' +
+            '<rect width="100%" height="100%" fill="orange" /></svg>'
+        );
 
-  <div class="slide" id="slide3">
-    <h2>Option 2</h2>
-    <div class="options" id="main-options-3"></div>
-    <div class="sub-options-container" id="sub-options-3"></div>
-    <div class="nav-buttons">
-      <button class="back-btn" id="back3">Back</button>
-      <button id="next3">Next</button>
-    </div>
-  </div>
+      /* Booking data (slides 2..7). Edit names, images, prices here. */
+      const bookingSlides = {
+        2: {
+          title: "Room Type",
+          mainOptions: [
+            {
+              name: "Standard Room",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "City View", price: 80, image: PLACEHOLDER },
+                { name: "Quiet Side", price: 75, image: PLACEHOLDER },
+                { name: "Twin Beds", price: 90, image: PLACEHOLDER },
+                { name: "King Bed", price: 95, image: PLACEHOLDER },
+                { name: "No Window", price: 60, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Deluxe Room",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Sea View", price: 130, image: PLACEHOLDER },
+                { name: "High Floor", price: 140, image: PLACEHOLDER },
+                { name: "Corner", price: 150, image: PLACEHOLDER },
+                { name: "Balcony", price: 155, image: PLACEHOLDER },
+                { name: "Twin Beds", price: 120, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Suite",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "City View", price: 200, image: PLACEHOLDER },
+                { name: "Executive", price: 230, image: PLACEHOLDER },
+                { name: "Corner", price: 240, image: PLACEHOLDER },
+                { name: "Penthouse", price: 350, image: PLACEHOLDER },
+                { name: "Garden", price: 210, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Royal Suite",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Imperial", price: 500, image: PLACEHOLDER },
+                { name: "Emperor", price: 520, image: PLACEHOLDER },
+                { name: "Ocean Wing", price: 540, image: PLACEHOLDER },
+                { name: "Corner", price: 560, image: PLACEHOLDER },
+                { name: "Garden", price: 510, image: PLACEHOLDER },
+              ],
+            },
+          ],
+        },
+        3: {
+          title: "Add-ons",
+          mainOptions: [
+            {
+              name: "Breakfast",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Buffet", price: 12, image: PLACEHOLDER },
+                { name: "Japanese", price: 14, image: PLACEHOLDER },
+                { name: "Vegan", price: 13, image: PLACEHOLDER },
+                { name: "Room Service", price: 18, image: PLACEHOLDER },
+                { name: "Onigiri Set", price: 8, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Transport",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Airport Pickup", price: 25, image: PLACEHOLDER },
+                { name: "Shuttle", price: 10, image: PLACEHOLDER },
+                { name: "Taxi Voucher", price: 15, image: PLACEHOLDER },
+                { name: "Car Rental", price: 50, image: PLACEHOLDER },
+                { name: "Bike Rental", price: 8, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Wellness",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Spa 30m", price: 40, image: PLACEHOLDER },
+                { name: "Gym Access", price: 10, image: PLACEHOLDER },
+                { name: "Massage", price: 60, image: PLACEHOLDER },
+                { name: "Pool Access", price: 8, image: PLACEHOLDER },
+                { name: "Yoga", price: 12, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Extras",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Late Checkout", price: 20, image: PLACEHOLDER },
+                { name: "Early Check-in", price: 20, image: PLACEHOLDER },
+                { name: "Baby Cot", price: 8, image: PLACEHOLDER },
+                { name: "Pet Fee", price: 30, image: PLACEHOLDER },
+                { name: "Parking", price: 6, image: PLACEHOLDER },
+              ],
+            },
+          ],
+        },
+        4: {
+          title: "Experience",
+          mainOptions: [
+            {
+              name: "City Tour",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Half Day", price: 45, image: PLACEHOLDER },
+                { name: "Full Day", price: 80, image: PLACEHOLDER },
+                { name: "Night Tour", price: 50, image: PLACEHOLDER },
+                { name: "Private Guide", price: 150, image: PLACEHOLDER },
+                { name: "Group Tour", price: 30, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Cultural",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Tea Ceremony", price: 25, image: PLACEHOLDER },
+                { name: "Kimono Rent", price: 40, image: PLACEHOLDER },
+                { name: "Calligraphy", price: 20, image: PLACEHOLDER },
+                { name: "Local Market", price: 15, image: PLACEHOLDER },
+                { name: "Temple Visit", price: 10, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Foodie",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Street Food Tour", price: 35, image: PLACEHOLDER },
+                { name: "Fine Dining", price: 90, image: PLACEHOLDER },
+                { name: "Sushi Class", price: 55, image: PLACEHOLDER },
+                { name: "Ramen Tour", price: 30, image: PLACEHOLDER },
+                { name: "Market Tasting", price: 20, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Adventure",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Hiking Half", price: 35, image: PLACEHOLDER },
+                { name: "Hiking Full", price: 60, image: PLACEHOLDER },
+                { name: "Kayak", price: 45, image: PLACEHOLDER },
+                { name: "Climbing", price: 70, image: PLACEHOLDER },
+                { name: "Zipline", price: 50, image: PLACEHOLDER },
+              ],
+            },
+          ],
+        },
+        5: {
+          title: "Final Services A",
+          mainOptions: [
+            {
+              name: "Laundry",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Basic", price: 8, image: PLACEHOLDER },
+                { name: "Fast", price: 12, image: PLACEHOLDER },
+                { name: "Premium", price: 20, image: PLACEHOLDER },
+                { name: "Dry Clean", price: 18, image: PLACEHOLDER },
+                { name: "Delicate", price: 15, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Business",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Meeting Room", price: 50, image: PLACEHOLDER },
+                { name: "Printer Pack", price: 10, image: PLACEHOLDER },
+                { name: "A/V Kit", price: 30, image: PLACEHOLDER },
+                { name: "Fast WiFi", price: 5, image: PLACEHOLDER },
+                { name: "Office Setup", price: 40, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Transport 2",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "City Shuttle", price: 8, image: PLACEHOLDER },
+                { name: "Private Car", price: 60, image: PLACEHOLDER },
+                { name: "Luxury Van", price: 120, image: PLACEHOLDER },
+                { name: "Limousine", price: 200, image: PLACEHOLDER },
+                { name: "Bike", price: 10, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Gifts",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Flower Box", price: 25, image: PLACEHOLDER },
+                { name: "Chocolates", price: 18, image: PLACEHOLDER },
+                { name: "Welcome Basket", price: 40, image: PLACEHOLDER },
+                { name: "Postcards", price: 6, image: PLACEHOLDER },
+                { name: "Souvenir", price: 30, image: PLACEHOLDER },
+              ],
+            },
+          ],
+        },
+        6: {
+          title: "Final Services B",
+          mainOptions: [
+            {
+              name: "Laundry B",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Basic", price: 8, image: PLACEHOLDER },
+                { name: "Fast", price: 12, image: PLACEHOLDER },
+                { name: "Premium", price: 20, image: PLACEHOLDER },
+                { name: "Dry Clean", price: 18, image: PLACEHOLDER },
+                { name: "Delicate", price: 15, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Business B",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Meeting Room", price: 50, image: PLACEHOLDER },
+                { name: "Printer Pack", price: 10, image: PLACEHOLDER },
+                { name: "A/V Kit", price: 30, image: PLACEHOLDER },
+                { name: "Fast WiFi", price: 5, image: PLACEHOLDER },
+                { name: "Office Setup", price: 40, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Transport B",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "City Shuttle", price: 8, image: PLACEHOLDER },
+                { name: "Private Car", price: 60, image: PLACEHOLDER },
+                { name: "Luxury Van", price: 120, image: PLACEHOLDER },
+                { name: "Limousine", price: 200, image: PLACEHOLDER },
+                { name: "Bike", price: 10, image: PLACEHOLDER },
+              ],
+            },
+            {
+              name: "Gifts B",
+              image: PLACEHOLDER,
+              subOptions: [
+                { name: "Flower Box", price: 25, image: PLACEHOLDER },
+                { name: "Chocolates", price: 18, image: PLACEHOLDER },
+                { name: "Welcome Basket", price: 40, image: PLACEHOLDER },
+                { name: "Postcards", price: 6, image: PLACEHOLDER },
+                { name: "Souvenir", price: 30, image: PLACEHOLDER },
+              ],
+            },
+          ],
+        },
+              };
 
-  <div class="slide" id="slide4">
-    <h2>Option 3</h2>
-    <div class="options" id="main-options-4"></div>
-    <div class="sub-options-container" id="sub-options-4"></div>
-    <div class="nav-buttons">
-      <button class="back-btn" id="back4">Back</button>
-      <button id="next4">Next</button>
-    </div>
-  </div>
+      /* ---------- app state ---------- */
+      let state = {
+        current: 1,
+        people: null,
+        selections: {},
+      };
 
-  <div class="slide" id="slide5">
-    <h2>Option 4</h2>
-    <div class="options" id="main-options-5"></div>
-    <div class="sub-options-container" id="sub-options-5"></div>
-    <div class="nav-buttons">
-      <button class="back-btn" id="back5">Back</button>
-      <button id="next5">Next</button>
-    </div>
-  </div>
+      /* ---------- helper rendering functions ---------- */
 
-  <!-- Slide 6: Summary -->
-  <div class="slide" id="slide6">
-    <h2>Booking Summary</h2>
-    <div class="summary-box" id="summary-box"></div>
-    <div class="nav-buttons">
-      <button class="back-btn" id="back-summary">Back to Start</button>
-      <div></div>
-    </div>
-  </div>
-</div>
+      // improved showSlide: hide all by selector (works for any number of slides)
+      function showSlide(n) {
+        document
+          .querySelectorAll(".slide")
+          .forEach((s) => s.classList.remove("active"));
+        if (n === "summary") {
+          document.getElementById("summary-slide").classList.add("active");
+          state.current = "summary";
+          renderSummary();
+          return;
+        }
+        const el = document.getElementById(`slide-${n}`);
+        if (el) el.classList.add("active");
+        state.current = n;
+        if (n >= 2 && n <= 7) renderDynamicSlide(n);
+      }
 
-<script>
-const selections = { people:null, slide2:null, slide3:null, slide4:null, slide5:null };
-const subOptions = [1,2,3,4,5]; // example sub options
-const mainOptions = 4; // number of main options per slide
-
-// Show slide
-function showSlide(id) {
-  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// --- People selection ---
-document.querySelectorAll('.people-option').forEach(el => {
-  el.addEventListener('click', () => {
-    selections.people = el.dataset.value;
-    document.querySelectorAll('.people-option').forEach(b => b.classList.remove('selected'));
-    el.classList.add('selected');
-  });
-});
-
-document.getElementById('next1').addEventListener('click', () => {
-  if(!selections.people){ alert("Select number of people"); return; }
-  generateMainOptions(2);
-  showSlide('slide2');
-});
-
-// --- Generate main + sub options ---
-function generateMainOptions(slideNum){
-  const mainContainer = document.getElementById(`main-options-${slideNum}`);
-  const subContainer = document.getElementById(`sub-options-${slideNum}`);
-  mainContainer.innerHTML = '';
-  subContainer.innerHTML = '';
-  for(let i=1;i<=mainOptions;i++){
-    const mainDiv = document.createElement('div');
-    mainDiv.className='option';
-    mainDiv.innerHTML = `<div class="image-placeholder"></div>Main Option ${i}`;
-    mainContainer.appendChild(mainDiv);
-
-    mainDiv.addEventListener('click', ()=>{
-      // select main
-      selections[`slide${slideNum}`] = null; // reset sub selection
-      mainContainer.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));
-      mainDiv.classList.add('selected');
-
-      // generate sub options at bottom
-      subContainer.style.display='block';
-      subContainer.innerHTML='';
-      subOptions.forEach(s=>{
-        const subDiv = document.createElement('div');
-        subDiv.className='sub-option';
-        subDiv.innerHTML=`Sub Option ${s} - $${s*50}`;
-        subDiv.addEventListener('click', ()=>{
-          selections[`slide${slideNum}`] = s;
-          subContainer.querySelectorAll('.sub-option').forEach(x=>x.classList.remove('selected'));
-          subDiv.classList.add('selected');
+      /* Slide 1 wiring */
+      document.querySelectorAll(".people-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".people-btn")
+            .forEach((b) => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          state.people = Number(btn.dataset.people);
         });
-        subContainer.appendChild(subDiv);
       });
-    });
-  }
-}
+      document.getElementById("next-1").addEventListener("click", () => {
+        if (!state.people) {
+          alert("Please select number of people");
+          return;
+        }
+        showSlide(2);
+      });
 
-// --- Navigation ---
-document.getElementById('back2').addEventListener('click', ()=>showSlide('slide1'));
-document.getElementById('next2').addEventListener('click', ()=>{
-  if(!selections.slide2){ alert("Select a sub option"); return; }
-  generateMainOptions(3);
-  showSlide('slide3');
-});
-document.getElementById('back3').addEventListener('click', ()=>showSlide('slide2'));
-document.getElementById('next3').addEventListener('click', ()=>{
-  if(!selections.slide3){ alert("Select a sub option"); return; }
-  generateMainOptions(4);
-  showSlide('slide4');
-});
-document.getElementById('back4').addEventListener('click', ()=>showSlide('slide3'));
-document.getElementById('next4').addEventListener('click', ()=>{
-  if(!selections.slide4){ alert("Select a sub option"); return; }
-  generateMainOptions(5);
-  showSlide('slide5');
-});
-document.getElementById('back5').addEventListener('click', ()=>showSlide('slide4'));
-document.getElementById('next5').addEventListener('click', ()=>{
-  if(!selections.slide5){ alert("Select a sub option"); return; }
-  showSummary();
-  showSlide('slide6');
-});
-document.getElementById('back-summary').addEventListener('click', ()=>{
-  Object.keys(selections).forEach(k=>selections[k]=null);
-  document.querySelectorAll('.people-option,.option,.sub-option').forEach(x=>x.classList.remove('selected'));
-  document.querySelectorAll('.sub-options-container').forEach(x=>x.style.display='none');
-  showSlide('slide1');
-});
+      /* Render dynamic slide n (n=2..7) */
+      function renderDynamicSlide(n) {
+        const spec = bookingSlides[n];
+        if (!spec) {
+          console.warn("No bookingSlides entry for", n);
+          return;
+        }
+        const titleEl = document.getElementById(`title-${n}`);
+        if (titleEl)
+          titleEl.textContent = `Step ${n} — ${spec.title || "Options"}`;
 
-// --- Show summary ---
-function showSummary(){
-  const summaryBox = document.getElementById('summary-box');
-  summaryBox.innerHTML = `
-    <p><strong>People:</strong> ${selections.people}</p>
-    <p><strong>Option 1:</strong> Sub Option ${selections.slide2} - $${selections.slide2*50}</p>
-    <p><strong>Option 2:</strong> Sub Option ${selections.slide3} - $${selections.slide3*50}</p>
-    <p><strong>Option 3:</strong> Sub Option ${selections.slide4} - $${selections.slide4*50}</p>
-    <p><strong>Option 4:</strong> Sub Option ${selections.slide5} - $${selections.slide5*50}</p>
-    <p><strong>Total:</strong> $${(selections.slide2+selections.slide3+selections.slide4+selections.slide5)*50*selections.people}</p>
-  `;
-}
-</script>
-</body>
+        const mainEl = document.getElementById(`main-${n}`);
+        const subContainer = document.getElementById(`sub-${n}`);
+        if (!mainEl || !subContainer) return;
+
+        mainEl.innerHTML = "";
+        subContainer.innerHTML = "";
+        subContainer.style.display = "none";
+
+        spec.mainOptions.forEach((main, i) => {
+          const wrap = document.createElement("div");
+          wrap.className = "option";
+          wrap.innerHTML = `<img class="main-image" src="${
+            main.image
+          }" alt="${escapeHtml(main.name)}" /><div><strong>${escapeHtml(
+            main.name
+          )}</strong></div>`;
+          wrap.addEventListener("click", () => {
+            // select main
+            mainEl
+              .querySelectorAll(".option")
+              .forEach((x) => x.classList.remove("selected"));
+            wrap.classList.add("selected");
+
+            // build sub list at bottom
+            subContainer.style.display = "block";
+            subContainer.innerHTML = `<h3>Sub options for ${escapeHtml(
+              main.name
+            )}</h3>`;
+            const list = document.createElement("div");
+            list.style.marginTop = "10px";
+            list.style.display = "grid";
+            list.style.gridTemplateColumns = "1fr";
+            list.style.gap = "10px";
+
+            main.subOptions.forEach((sub, sIdx) => {
+              const item = document.createElement("div");
+              item.className = "sub-option";
+              item.innerHTML = `<img src="${sub.image}" alt="${escapeHtml(
+                sub.name
+              )}" /><div class="meta"><div><strong>${escapeHtml(
+                sub.name
+              )}</strong></div><div>$${sub.price}</div></div>`;
+              item.addEventListener("click", () => {
+                state.selections[n] = { mainIndex: i, subIndex: sIdx };
+                list
+                  .querySelectorAll(".sub-option")
+                  .forEach((x) => x.classList.remove("selected"));
+                item.classList.add("selected");
+              });
+
+              // restore previous selection if matches
+              const prev = state.selections[n];
+              if (prev && prev.mainIndex === i && prev.subIndex === sIdx) {
+                setTimeout(() => item.classList.add("selected"), 0);
+                wrap.classList.add("selected");
+              }
+
+              list.appendChild(item);
+            });
+
+            subContainer.appendChild(list);
+          });
+
+          // if previously chosen main, trigger click to restore subs/highlight
+          const prev = state.selections[n];
+          if (prev && prev.mainIndex === i) {
+            setTimeout(() => wrap.click(), 0);
+          }
+
+          mainEl.appendChild(wrap);
+        });
+      }
+
+      /* Next/back wiring for all dynamic slides up to 7 */
+      function attachNav() {
+        // back buttons (data-back values)
+        document.querySelectorAll("[data-back]").forEach((btn) => {
+          const backFor = Number(btn.getAttribute("data-back"));
+          btn.addEventListener("click", () => {
+            if (backFor > 1) showSlide(backFor - 1);
+            else showSlide(1);
+          });
+        });
+
+        // next for slides 2..6 lead to next slide; slide7 -> summary
+        for (let i = 2; i <= 6; i++) {
+          const nextBtn = document.getElementById(`next-${i}`);
+          if (!nextBtn) continue;
+          nextBtn.addEventListener("click", () => {
+            if (!state.selections[i]) {
+              alert(
+                `Please select a main option and a sub-option for Step ${i}`
+              );
+              return;
+            }
+            if (i < 6) showSlide(i + 1);
+            else showSlide("summary"); // i === 7
+          });
+        }
+      }
+      attachNav();
+
+      /* Summary rendering */
+      function renderSummary() {
+        const area = document.getElementById("summary-area");
+        area.innerHTML = "";
+        const people = state.people || 1;
+        const header = document.createElement("div");
+        header.innerHTML = `<p><strong>People:</strong> ${people}</p>`;
+        area.appendChild(header);
+
+        let subtotal = 0;
+        const grid = document.createElement("div");
+        grid.className = "summary-grid";
+
+        for (let slide = 2; slide <= 6; slide++) {
+          const sel = state.selections[slide];
+          const card = document.createElement("div");
+          card.className = "summary-item";
+          if (!sel) {
+            card.innerHTML = `<div style="flex:1">Slide ${slide}: No selection</div>`;
+          } else {
+            const main = bookingSlides[slide].mainOptions[sel.mainIndex];
+            const sub = main.subOptions[sel.subIndex];
+            subtotal += sub.price;
+            card.innerHTML = `<img src="${main.image}" alt="${escapeHtml(
+              main.name
+            )}" /><div><div><strong>${escapeHtml(
+              main.name
+            )}</strong></div><div>${escapeHtml(sub.name)}</div><div>$${
+              sub.price
+            }</div></div>`;
+          }
+          grid.appendChild(card);
+        }
+
+        const total = subtotal * people;
+        area.appendChild(grid);
+        const totalDiv = document.createElement("div");
+        totalDiv.style.marginTop = "12px";
+        totalDiv.innerHTML = `<strong>Grand total (people x subtotal):</strong> $${total}`;
+        area.appendChild(totalDiv);
+      }
+
+      /* Back to start — reset selections */
+      document.getElementById("back-summary").addEventListener("click", () => {
+        state = { current: 1, people: null, selections: {} };
+        document
+          .querySelectorAll(".option,.sub-option,.people-btn")
+          .forEach((el) => el.classList.remove("selected"));
+        document
+          .querySelectorAll(".sub-options-container")
+          .forEach((el) => (el.style.display = "none"));
+        showSlide(1);
+      });
+
+      /* util */
+      function escapeHtml(s) {
+        return ("" + s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[c])
+        );
+      }
+
+      /* init */
+      showSlide(1);
+    </script>
+  </body>
 </html>
